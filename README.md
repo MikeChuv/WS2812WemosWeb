@@ -18,5 +18,5 @@ WS2812 strip controller based on Wemos D1 mini (ESP8266EX)
 ### More
 You can find more led effects [here](https://github.com/AlexGyver/WS2812_FX/blob/master/%D0%BF%D1%80%D0%BE%D1%88%D0%B8%D0%B2%D0%BA%D0%B8/WS2812_FX_rndChange_light_fixed/LED_EFFECT_FUNCTIONS.ino)
 
-Add buttons in UI, read comments in `index.html`
+To add buttons in UI, read comments in `index.html` \
 If you want to visualize IP on the strip, modify `showIP()` function in `utils.ino`

@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    .colorpicker{
+      width: 70%;
+      height: 200px;
+      padding: 16px 20px;
+      border: none;
+      border-radius: 4px;
+    }
+    .btn{
+      border: none;
+      border-radius: 4px;
+      color: white;
+      padding: 16px 32px;
+      text-decoration: none;
+      margin: 5px 2px;
+      cursor: pointer;
+    }
+    #grid {
+      display: grid;
+      grid-template-rows: 1fr 1fr 1fr 1fr;
+      grid-template-columns: 1fr 1fr 1fr;
+      grid-gap: 1vw;
+      width: 70%;
+      }
+    #grid > .btn{
+      font-size: 2vw;
+      padding: 1em;
+      background: #4CAF50;
+      text-align: center;
+    }
+    .offButton{
+      background: #f46161;
+    }
+    .slider {
+      border: none;
+      border-radius: 10px;
+      -webkit-appearance: none;
+      width: 70%;
+      height: 30px;
+      background: #d3d3d3;
+      outline: none;
+      opacity: 0.6;
+      -webkit-transition: .2s;
+      transition: opacity .2s;
+    }
+    .slider:hover {
+      opacity: 1;
+    }
+    .slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      border: none;
+      border-radius: 15px;
+      width: 40px;
+      height: 35px;
+      background: #4CAF50;
+      cursor: pointer;
+    }
+    .slider::-moz-range-thumb {
+      border: none;
+      border-radius: 15px;
+      width: 40px;
+      height: 35px;
+      background: #4CAF50;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+ <center>
+  LED Control:
+  <br/>
+  <p>Select color: <span id="colorLabel"></span></p>
+  <input type="color" id="favcolor" name="favcolor" value="#ff0000" class="colorpicker" oninput="sendRGB()">
+  <br/>
+  <p>Effect Speed (less = faster): <span id="delayLabel"></span></p>
+  <input class="slider" id="delayValue" type="range" min="0" max="100" step="1" oninput="sendDelay()"/>
+  <br/>
+  <p>Effect Scale: <span id="scaleLabel"></span></p>
+  <input class="slider" id="scaleValue" type="range" min="-8" max="8" step="1" oninput="sendScale()"/>
+  <br/>
+  <div id="grid">
+    <input type="button" value="Running ON" id="running" class="btn">
+    <input type="button" value="Rainbow Cycle ON" id="rainbowcycle" class="btn">
+    <input type="button" value="Fire ON" id="fire" class="btn">
+    <input type="button" value="Rainbow Loop ON" id="rainbowloop" class="btn">
+    <input type="button" value="Rainbow Loop 2 ON" id="rainbowloop2" class="btn">
+    <input type="button" value="Random Burst ON" id="randomburst" class="btn">
+    <input type="button" value="Random Color Pop ON" id="randomcolorpop" class="btn">
+    <input type="button" value="Rainbow Fade ON" id="rainbowfade" class="btn">
+    <input type="button" value="RGB Propeller ON" id="rgbpropeller" class="btn">
+    <input type="button" value="Color Bounce Fade ON" id="colorbouncefade" class="btn">
+    <input type="button" value="EMS Lights ON" id="emslights" class="btn">
+    <input type="button" value="Pulse ON" id="pulse" class="btn">
+  </div>
+  <br/>
+  <form><input type="button" value="OFF" id="offbutton" class="btn offButton"></form>
+  <br/>
+  </center>
+</body>
+<script>
+  // var connection = new WebSocket('ws://' + location.hostname + ':81/', ['arduino']);
+  // connection.onopen = function() {
+  //   connection.send('Connect ' + new Date());
+  // };
+  // connection.onerror = function(error) {
+  //   console.log('WebSocket Error ', error);
+  // };
+  // connection.onmessage = function(e) {
+  //   console.log('Server: ', e.data);
+  // };
+  const Slider = function(id, labelId) {
+    this.sliderObject = document.getElementById(id)
+    this.sliderLabel = document.getElementById(labelId)
+  }
+  Slider.prototype.log = function(key) {
+    this.sliderLabel.innerHTML = this.sliderObject.value
+    this.sendValue = key + this.sliderObject.value
+    console.log(this.sendValue);
+  }
+  // Slider.prototype.send = function(key) {
+  //   this.sliderLabel.innerHTML = this.sliderObject.value
+  //   this.sendValue = key + this.sliderObject.value
+  //   connection.send(this.sendValue);
+  // }
+
+  const colorInput = new Slider('favcolor', 'colorLabel')
+  const delayInput = new Slider('delayValue', 'delayLabel')
+  const scaleInput = new Slider('scaleValue', 'scaleLabel')
+
+  let allFxBtns = []
+  updateButton = (buttonObject, label, message) => {
+    if (buttonObject.value == label){
+      buttonObject.value = 'OFF'
+      buttonObject.style.background =  '#f46161'
+      for(let btn of allFxBtns){
+        if(btn.buttonObject !== buttonObject){
+          btn.buttonObject.value = btn.label
+          btn.buttonObject.style.background =  '#4caf50'
+        }
+      }
+      console.log(message)
+      // connection.send(message)
+    }
+    else{
+      buttonObject.value = label
+      buttonObject.style.background =  '#4caf50'
+      console.log('OFF')
+      // connection.send('allblack')
+    }
+  }
+
+  const Button = function(id) {
+    this.buttonObject = document.getElementById(id)
+    allFxBtns.push(this)
+    this.label = this.buttonObject.value
+    this.buttonObject.addEventListener('click', () => {updateButton(this.buttonObject, this.label, id)})
+  }
+
+  const runButton = new Button('running')
+  const rainButton = new Button('rainbowcycle')
+  const fireButton = new Button('fire')
+  const rainbowloopButton = new Button('rainbowloop')
+  const rainbowloop2Button = new Button('rainbowloop2')
+  const randomburstButton = new Button('randomburst')
+  const randomcolorpopButton = new Button('randomcolorpop')
+  const rainbowfadeButton = new Button('rainbowfade')
+  const rgbpropellerButton = new Button('rgbpropeller')
+  const colorbouncefadeButton = new Button('colorbouncefade')
+  const emslightsButton = new Button('emslights')
+  const pulseButton = new Button('pulse')
+
+  function sendRGB(){
+    colorInput.log('');
+    // colorInput.send('');
+  }
+
+  function sendDelay(){
+    delayInput.log('T');
+    // delayInput.send('T');
+  }
+  function sendScale(){
+    scaleInput.log('S');
+    // scaleInput.send('S');
+  }
+
+  const offButton = document.getElementById('offbutton')
+  offButton.addEventListener('click', sendOff);
+  function sendOff() {
+    // connection.send('allblack')
+    for(let btn of allFxBtns){
+      btn.buttonObject.value = btn.label
+      btn.buttonObject.style.background =  '#4caf50'
+    }
+    console.log('all off');
+  }
+</script>
+</html>

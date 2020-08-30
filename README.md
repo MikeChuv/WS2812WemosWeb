@@ -3,7 +3,7 @@
 WS2812 strip controller based on Wemos D1 mini (ESP8266EX)
 
 ### Requirements
-[FastLED](https://github.com/FastLED/FastLED) library (3.2.0)
+[FastLED](https://github.com/FastLED/FastLED) library (3.2.0) \
 [arduinoWebSockets](https://github.com/Links2004/arduinoWebSockets) library (2.2.0)
 
 ### Usage

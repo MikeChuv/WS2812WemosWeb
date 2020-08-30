@@ -1,6 +1,6 @@
 # WS2812WemosWeb
 
-WS2812 strip controller based on Wemos D1 mini (ESP8266EX)
+WS2812 strip controller with Web UI based on Wemos D1 mini (ESP8266EX)
 
 ### Requirements
 [FastLED](https://github.com/FastLED/FastLED) library (3.2.0) \
